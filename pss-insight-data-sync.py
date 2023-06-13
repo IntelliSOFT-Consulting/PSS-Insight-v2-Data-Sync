@@ -2,19 +2,22 @@ import requests
 import os
 
 # Variables
-username = os.getenv("DHIS2_USERNAME")
-password = os.getenv("DHIS2_PASSWORD")
+source_username = os.getenv("SOURCE_USERNAME")
+source_password = os.getenv("SOURCE_PASSWORD")
+target_username = os.getenv("TARGET_USERNAME")
+target_password = os.getenv("TARGET_PASSWORD")
 source_url = os.getenv("SOURCE_URL")
 target_url = os.getenv("TARGET_URL")
 
+
 # Check if any of the environment variables are missing
-if not (username and password and source_url and target_url):
+if not (source_username and source_password and source_url and target_url):
     raise ValueError("Please set the DHIS2_USERNAME, DHIS2_PASSWORD, SOURCE_URL, and TARGET_URL environment variables.")
 
 data_elements = ["Fz75Jo6v99X", "DAvT1ODxYKK", "HLBBj5vnCC3"]  # Specify the data elements to be included
 
 # Fetch data from source DHIS2 instance
-response = requests.get(source_url, auth=(username, password), params={"paging": "false"})
+response = requests.get(source_url, auth=(source_username, source_password), params={"paging": "false"})
 data = response.json()
 
 # Preprocess data to include specific data element values
@@ -36,7 +39,7 @@ print('processed_data',processed_data)
 
 # Push processed data to target DHIS2 instance
 for event in processed_data:
-    response = requests.post(target_url, auth=(username, password), json=event)
+    response = requests.post(target_url, auth=(target_username, target_password), json=event)
     if response.status_code == 200:
         print("Event successfully pushed:", event["event"])
     else:
