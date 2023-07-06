@@ -18,8 +18,8 @@ data_elements_url = os.getenv("SOURCE_DATA_ELEMENTS_URL")
 if not (source_username and source_password and source_url and target_url):
     raise ValueError("Please set the SOURCE_USERNAME, SOURCE_PASSWORD, SOURCE_URL, and TARGET_URL environment variables.")
 
-# Fetch data elements from source DHIS2 instance
-response = requests.get(data_elements_url, auth=(source_username, source_password))
+# Fetch data elements from source DATA_ELEMNETS API
+response = requests.get(data_elements_url, auth=(source_username, source_password), params={"paging": "false"})
 data_elements = response.json()["dataElements"]
 
 # Extract data element IDs
