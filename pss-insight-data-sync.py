@@ -1,6 +1,7 @@
 import requests
 import os
 from dotenv import load_dotenv
+from urllib.parse import urljoin
 
 # Load environment variables from .env file
 load_dotenv()
@@ -13,7 +14,7 @@ target_password = os.getenv("TARGET_PASSWORD")
 source_url = os.getenv("SOURCE_URL")
 target_url = os.getenv("TARGET_URL")
 data_elements_url = os.getenv("SOURCE_DATA_ELEMENTS_URL")
-sync_check_url = os.getenv("SYNC_CHECK_URL")
+sync_check_url = urljoin(source_url.rstrip("/events"), "/datastore/configurations/sync_configs")
 
 # Checking if sync_to_international attribute is set to True
 response_sync_check = requests.get(sync_check_url, auth=(source_username, source_password))
