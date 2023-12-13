@@ -19,7 +19,7 @@ sync_check_url = urljoin(source_url.rstrip("/events"), "/datastore/configuration
 # Checking if sync_to_international attribute is set to True
 response_sync_check = requests.get(sync_check_url, auth=(source_username, source_password))
 
-if response_sync_check.status_code == 200 and response_sync_check.json() == True:
+if response_sync_check.status_code == 200 and response_sync_check.json().get("sync_to_international") == True:
     print("sync_to_international is set to True. Proceeding with synchronization.")
 else:
     print("sync_to_international is not set to True. Exiting.")
