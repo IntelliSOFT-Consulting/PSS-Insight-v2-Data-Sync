@@ -1,6 +1,7 @@
 import requests
 import os
 from dotenv import load_dotenv
+from urllib.parse import urljoin
 
 # Load environment variables from .env file
 load_dotenv()
@@ -13,10 +14,16 @@ target_password = os.getenv("TARGET_PASSWORD")
 source_url = os.getenv("SOURCE_URL")
 target_url = os.getenv("TARGET_URL")
 data_elements_url = os.getenv("SOURCE_DATA_ELEMENTS_URL")
+sync_check_url = urljoin(source_url.rstrip("/events"), "/datastore/configurations/sync_configs")
 
-# Check if any of the environment variables are missing
-if not (source_username and source_password and source_url and target_url):
-    raise ValueError("Please set the SOURCE_USERNAME, SOURCE_PASSWORD, SOURCE_URL, and TARGET_URL environment variables.")
+# Checking if sync_to_international attribute is set to True
+response_sync_check = requests.get(sync_check_url, auth=(source_username, source_password))
+
+if response_sync_check.status_code == 200 and response_sync_check.json().get("sync_to_international") == True:
+    print("sync_to_international is set to True. Proceeding with synchronization.")
+else:
+    print("sync_to_international is not set to True. Exiting.")
+    exit()
 
 # Fetch data elements from source DATA_ELEMNETS API
 response = requests.get(data_elements_url, auth=(source_username, source_password), params={"paging": "false"})
@@ -28,8 +35,6 @@ data_element_ids = [data_element["id"] for data_element in data_elements]
 # Fetch data from source DHIS2 instance
 response = requests.get(source_url, auth=(source_username, source_password), params={"paging": "false"})
 data = response.json()
-
-
 
 # Preprocess data to include specific data element values
 processed_data = []
